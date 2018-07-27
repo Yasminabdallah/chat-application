@@ -1,7 +1,5 @@
 var mysql      = require('mysql');
 var migration = require('mysql-migrations');
-
-
 var connection = mysql.createPool({
     connectionLimit : 10,
     host     : 'localhost',
@@ -10,6 +8,8 @@ var connection = mysql.createPool({
     database : 'realtimechat'
   });
   
-
+ 
   //to create migrations 
   migration.init(connection, __dirname + '/migrations');
+  
+  module.exports = connection;

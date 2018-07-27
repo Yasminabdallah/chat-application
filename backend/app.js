@@ -3,14 +3,22 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var bodyBarser = require('body-parser');
-var migration = require('mysql-migration');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var migration = require('mysql-migrations');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+var registerController=require('./controllers/register-controller');
+var loginController=require('./controllers/login-controller');
 var app = express();
-app.use(bodyBarser());
-app.use(flash());
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.json());
+app.use(session({
+  secret: 'mySecret',
+  cookie: { maxAge: 30 * 60 * 1000 }
+}))
+
+
 app.use(function(req,res,next){
   res.setHeader("Access-Control-Allow-Origin","*");
   res.setHeader("Access-Control-Allow-Methods","OPTIONS,GET,POST,PUT,DELETE")
@@ -32,7 +40,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/api', indexRouter);
+app.post('/api/register',registerController.register);
+app.post('/api/login',loginController.login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
